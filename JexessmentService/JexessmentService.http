@@ -1,0 +1,6 @@
+@JexessmentService_HostAddress = http://localhost:5079
+
+GET {{JexessmentService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
