@@ -4,15 +4,17 @@ namespace Jexessment.Models;
 
 public class Vacancy {
 
-    //[Required]
-    public Guid IdVacancy { get; set; }
+    [Required]
+    public int Id { get; set; }
     
-    //[Required]
-    public Guid IdCompany { get; set; }
+    [Required]
+    public int CompanyId { get; set; }
 
-    //[Required]
+    [Required]
     public string Title { get; set; }
 
     public string Description { get; set; }
+
+    public Company Company { get; set; }
 
 }

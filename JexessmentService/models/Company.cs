@@ -4,12 +4,13 @@ namespace Jexessment.Models;
 
 public class Company {
 
-    //[Required]
-    public Guid IdCompany { get; set; }
+    [Required]
+    public int Id { get; set; }
 
-    //[Required]
+    [Required]
     public string Name { get; set; }
 
     public string Address { get; set; }
 
+    public List<Vacancy> Vacancies { get; } = new();
 }

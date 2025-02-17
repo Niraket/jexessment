@@ -1,42 +1,24 @@
 using System.Collections.Concurrent;
 using Jexessment.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jexessment.Repositories;
 
 public class VacancyRepository : IVacancyRepository
 {
-    private readonly ConcurrentDictionary<string, Vacancy> vacancies;
+    private VacancyDbContext db;
 
     public VacancyRepository()
     {
-        vacancies = new ConcurrentDictionary<string, Vacancy>();
+        db = new VacancyDbContext();
     }
 
-    public void Add(Vacancy vacancy)
+    public async void AddVacancy(Vacancy vacancy)
     {
-        vacancies.TryAdd(vacancy.Title, vacancy);
+        db.Vacancies.Add(vacancy);
+        await db.SaveChangesAsync();
     }
 
-    public void AddVacancy(Vacancy vacancy)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<Vacancy>> GetVacancies(string name)
-    {
-        return Task.Run(async () =>
-        {
-            await Task.Delay(400);        // Simulate processing time
-            IEnumerable<Vacancy> filtered = vacancies.Values;
-            if (!String.IsNullOrEmpty(name))
-                filtered = filtered.Where(it => it.Title != null && it.Title.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
-            return filtered;
-        });
-    }
-
-    public async Task<IEnumerable<Vacancy>> GetVacancies() => [new Vacancy{
-                IdVacancy = Guid.NewGuid(),
-                IdCompany = Guid.NewGuid(),
-                Title = "Programmer",
-                Description = "A good one"}];
+    public async Task<IEnumerable<Vacancy>> GetVacancies() =>
+        await db.Vacancies.ToListAsync();
 }

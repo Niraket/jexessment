@@ -1,11 +1,13 @@
 using Jexessment.Contracts;
+using Jexessment.Models;
 using Jexessment.Repositories;
 using Jexessment.Service;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jexessment;
 
 public static class Program
-{
+{    
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -26,35 +28,19 @@ public static class Program
 
         app.UseHttpsRedirection();        
 
-        app.MapGet("/getvacancies", async(JexessmentService service) =>
+        app.MapGet("/getvacancies", async ([FromServices] IJexessmentService service) =>
         {
             return await service.GetVacancies();
         })
         .WithName("GetVacancies");
 
-        var summaries = new[]
+        app.MapPost("/addvacancy", async (Vacancy vacancy, [FromServices] IJexessmentService service) =>
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-        app.MapGet("/weatherforecast", () =>
-        {
-            var forecast =  Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-                .ToArray();
-            return forecast;
+            service.AddVacancy(vacancy);
+            return Results.Created($"/addvacancy/{vacancy.Id}", vacancy);
         })
-        .WithName("GetWeatherForecast");
+        .WithName("AddVacancy");
 
         await app.RunAsync();
-    }
-
-    record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-    {
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }
